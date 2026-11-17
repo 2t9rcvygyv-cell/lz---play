@@ -4,412 +4,447 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#101820">
-<title>IZ PLAY - Battle Royale</title>
+<meta name="theme-color" content="#101923">
+<title>IZ PLAY 3D Battle Royale</title>
 <style>
 *{box-sizing:border-box;touch-action:none}
-body{margin:0;background:#101820;color:white;font-family:Arial;overflow:hidden}
-canvas{display:block;width:100vw;height:100dvh}
-#hud{position:absolute;top:12px;left:10px;right:10px;display:flex;justify-content:space-between;gap:5px;pointer-events:none}
-.stat{background:#101820dd;padding:9px 11px;border:1px solid #ffffff30;border-radius:10px;font-size:12px;font-weight:bold}
-#controls{position:absolute;bottom:22px;left:15px;right:15px;display:flex;justify-content:space-between;align-items:end}
-#joy{width:125px;height:125px;border-radius:50%;background:#ffffff30;border:3px solid #ffffff80;position:relative}
-#stick{width:46px;height:46px;background:#ffffffcc;border-radius:50%;position:absolute;left:36px;top:36px}
-#fire{width:82px;height:82px;border-radius:50%;background:#df4435;border:4px solid #ffb3a9;color:white;font-size:17px;font-weight:bold}
-#reload{width:58px;height:58px;border-radius:50%;background:#293b50;color:white;border:2px solid white}
-#start{position:absolute;inset:0;background:linear-gradient(#09131aee,#10241eee);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
-.logo{font-size:45px;font-weight:1000;letter-spacing:3px;color:#ffcf43;text-shadow:0 0 25px #ff9b36}
-#start h2{letter-spacing:4px}
-#start p{color:#b9c8d2;line-height:1.6}
-select{background:#182a38;color:white;border:1px solid #71889a;padding:13px;border-radius:10px;width:230px;margin:7px}
-.mainbtn{background:linear-gradient(90deg,#f5a623,#e84c32);color:white;border:0;border-radius:12px;padding:16px 35px;font-size:17px;font-weight:bold;margin-top:15px}
-#message{color:#ffda69;margin:10px}
-#notice{position:absolute;top:75px;left:0;right:0;text-align:center;color:white;font-weight:bold;text-shadow:0 2px 5px black;pointer-events:none}
-.hidden{display:none!important}
-#bottomInfo{position:absolute;bottom:160px;right:15px;text-align:right;font-size:12px;text-shadow:0 2px 5px black;pointer-events:none}
+body{margin:0;background:#101923;color:white;font-family:Arial;overflow:hidden}
+#game{position:fixed;inset:0}
+canvas{display:block}
+#lobby{
+ position:fixed;inset:0;z-index:5;
+ background:linear-gradient(90deg,#08121bdd,#08121d55),linear-gradient(#0002,#0008);
+ display:flex;flex-direction:column;justify-content:space-between;
+ padding:18px 5%; 
+}
+.top{display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:30px;font-weight:1000;letter-spacing:3px;color:#ffd45b}
+.tag{font-size:11px;color:#c7d3df;letter-spacing:2px}
+.middle{text-align:left;max-width:430px}
+.middle h1{font-size:clamp(35px,7vw,65px);margin:5px 0}
+.middle p{color:#c1d0dc}
+.bottom{display:flex;justify-content:space-between;align-items:end;gap:10px}
+.menu{display:flex;gap:8px;flex-wrap:wrap}
+.menu button,.action{
+ background:#1a2b3ccc;border:1px solid #ffffff44;color:white;
+ border-radius:10px;padding:13px;font-weight:bold
+}
+.action{background:linear-gradient(90deg,#ffbb36,#ec542f);
+ border:0;padding:17px 32px;font-size:18px}
+#hud{position:fixed;inset:0;z-index:3;pointer-events:none;display:none}
+.stat{position:absolute;top:12px;background:#08121dcc;border:1px solid #ffffff44;padding:10px;border-radius:10px;font-weight:bold}
+#health{left:12px}#count{right:12px}
+#cross{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:27px}
+#joystick{position:absolute;left:20px;bottom:22px;width:120px;height:120px;border-radius:50%;background:#ffffff24;border:2px solid #ffffff70;pointer-events:auto}
+#knob{position:absolute;width:48px;height:48px;left:34px;top:34px;border-radius:50%;background:#ffffffbb}
+#buttons{position:absolute;right:20px;bottom:25px;display:flex;gap:12px;align-items:end;pointer-events:auto}
+#fire,#reload{border:2px solid #fff;border-radius:50%;color:white;font-weight:bold}
+#fire{width:82px;height:82px;background:#e74a38;font-size:17px}
+#reload{width:58px;height:58px;background:#263d55}
+#rotate{position:fixed;inset:0;background:#08121d;color:white;z-index:20;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;font-size:20px}
+#notice{position:absolute;top:65px;width:100%;text-align:center;text-shadow:0 2px 5px black}
+@media(orientation:portrait){
+ #rotate{display:flex}
+}
+@media(orientation:landscape){
+ #rotate{display:none}
+}
 </style>
 </head>
 <body>
 
-<canvas id="game"></canvas>
+<div id="game"></div>
 
-<div id="hud" class="hidden">
- <div class="stat">❤️ <span id="hp">100</span></div>
- <div class="stat">🔫 <span id="ammo">30</span>/30</div>
- <div class="stat">☠️ <span id="kills">0</span></div>
- <div class="stat">👥 <span id="alive">50</span></div>
+<div id="rotate">
+ <div>📱<br><br>Hãy xoay điện thoại nằm ngang để chơi IZ PLAY</div>
 </div>
 
-<div id="notice"></div>
-<div id="bottomInfo" class="hidden">
- <div>AK-47</div>
- <div id="zone">VÒNG BO AN TOÀN</div>
+<div id="lobby">
+ <div class="top">
+  <div>
+   <div class="logo">ｌｚ PLAY</div>
+   <div class="tag">3D BATTLE ROYALE</div>
+  </div>
+  <div>👤 PLAYER<br><small>LEVEL 1</small></div>
+ </div>
+
+ <div class="middle">
+  <div class="tag">WELCOME TO THE BATTLEFIELD</div>
+  <h1>READY TO<br>FIGHT?</h1>
+  <p>Chiến đấu • Sinh tồn • Chiến thắng</p>
+  <p>👥 Tối đa 50 nhân vật<br>🤖 Người chơi + Bot</p>
+  <select id="map" style="background:#182b3d;color:white;padding:10px;border-radius:8px">
+   <option value="island">🏝️ Đảo sinh tồn</option>
+   <option value="desert">🏜️ Sa mạc</option>
+   <option value="snow">❄️ Núi tuyết</option>
+  </select>
+ </div>
+
+ <div class="bottom">
+  <div class="menu">
+   <button onclick="alert('Kho đồ sẽ được cập nhật ở phiên bản tiếp theo!')">🎒 KHO ĐỒ</button>
+   <button onclick="alert('Nhân vật sẽ được cập nhật!')">🧍 NHÂN VẬT</button>
+  </div>
+  <button class="action" id="start">BẮT ĐẦU ▶</button>
+ </div>
 </div>
 
-<div id="controls" class="hidden">
- <div id="joy"><div id="stick"></div></div>
- <div style="display:flex;align-items:end;gap:12px">
+<div id="hud">
+ <div class="stat" id="health">❤️ 100</div>
+ <div class="stat" id="count">👥 50</div>
+ <div id="cross">＋</div>
+ <div id="notice"></div>
+ <div id="joystick"><div id="knob"></div></div>
+ <div id="buttons">
   <button id="reload">↻</button>
   <button id="fire">BẮN</button>
  </div>
 </div>
 
-<div id="start">
- <div class="logo">ｌｚ PLAY</div>
- <h2>BATTLE ROYALE</h2>
- <p>SINH TỒN • CHIẾN ĐẤU • CHIẾN THẮNG</p>
- <p>Chọn bản đồ chiến đấu</p>
- <select id="mapSelect">
-  <option value="island">🏝️ Đảo Sinh Tồn</option>
-  <option value="desert">🏜️ Sa Mạc</option>
-  <option value="snow">❄️ Núi Tuyết</option>
- </select>
- <p>Chế độ: Người chơi + Bot</p>
- <p>Tối đa 50 nhân vật mỗi trận</p>
- <button class="mainbtn" id="play">BẮT ĐẦU CHIẾN ĐẤU</button>
- <div id="message">Sẵn sàng chưa, chiến binh?</div>
-</div>
+<script type="module">
+import * as THREE from
+'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
-<script>
-const canvas=document.getElementById("game");
-const ctx=canvas.getContext("2d");
+const root=document.getElementById("game");
+const scene=new THREE.Scene();
+scene.background=new THREE.Color(0x8bc3dc);
+scene.fog=new THREE.Fog(0x8bc3dc,55,180);
 
-let W,H,dpr=1;
-let running=false;
-let player,bots=[],bullets=[],obstacles=[];
-let kills=0,ammo=30,reloading=false;
-let move={x:0,y:0};
-let zone=1050,frame=0,lastShot=0;
+const camera=new THREE.PerspectiveCamera(
+ 65,innerWidth/innerHeight,.1,500
+);
+const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));
+renderer.setSize(innerWidth,innerHeight);
+renderer.shadowMap.enabled=true;
+renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+root.appendChild(renderer.domElement);
+
+scene.add(new THREE.HemisphereLight(0xffffff,0x52664a,2));
+const sun=new THREE.DirectionalLight(0xffffff,2.5);
+sun.position.set(40,70,30);
+sun.castShadow=true;
+scene.add(sun);
+
+let player,bots=[],bullets=[];
+let playing=false,hp=100,kills=0,ammo=30;
+let yaw=0,pitch=.25,moveX=0,moveY=0;
+let lastShot=0,zone=95;
 let mapType="island";
-let mapColor="#527c48";
+const clock=new THREE.Clock();
+const raycaster=new THREE.Raycaster();
 
-function resize(){
- dpr=Math.min(devicePixelRatio||1,2);
- W=innerWidth;H=innerHeight;
- canvas.width=W*dpr;
- canvas.height=H*dpr;
- ctx.setTransform(dpr,0,0,dpr,0,0);
+function mat(color){return new THREE.MeshStandardMaterial({color,roughness:.85})}
+
+function ground(){
+ const colors={island:0x527c48,desert:0xb59a67,snow:0xd8e4eb};
+ scene.background=new THREE.Color(
+  mapType==="snow"?0x9eafc5:mapType==="desert"?0xe5b97b:0x8bc3dc
+ );
+ scene.fog.color.copy(scene.background);
+ const g=new THREE.Mesh(
+  new THREE.PlaneGeometry(250,250),
+  mat(colors[mapType])
+ );
+ g.rotation.x=-Math.PI/2;
+ g.receiveShadow=true;
+ scene.add(g);
 }
-addEventListener("resize",resize);
-resize();
 
-function random(min,max){return Math.random()*(max-min)+min}
-function distance(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function makeCharacter(color){
+ const group=new THREE.Group();
+ const body=new THREE.Mesh(
+  new THREE.CapsuleGeometry(.48,.85,4,8),mat(color)
+ );
+ body.position.y=1.15;
+ body.castShadow=true;
+ group.add(body);
 
-function createMap(){
- obstacles=[];
- mapColor=mapType==="island"?"#527c48":mapType==="desert"?"#a98a55":"#a7bdc8";
- for(let i=0;i<55;i++){
-  obstacles.push({
-   x:random(-950,950),
-   y:random(-950,950),
-   w:random(45,110),
-   h:random(45,110),
-   type:Math.random()
-  });
+ const head=new THREE.Mesh(
+  new THREE.SphereGeometry(.32,16,12),mat(0xe5bd99)
+ );
+ head.position.y=2;
+ head.castShadow=true;
+ group.add(head);
+
+ const gun=new THREE.Mesh(
+  new THREE.BoxGeometry(.16,.17,1.15),mat(0x222831)
+ );
+ gun.position.set(.55,1.35,-.45);
+ group.add(gun);
+
+ return group;
+}
+
+function addWorld(){
+ const colors={
+ island:[0x397b42,0x6e4e32],
+ desert:[0xb58b50,0x776047],
+ snow:[0xc7dce9,0x687989]
+ };
+ let treeMat=mat(colors[mapType][0]);
+ let trunkMat=mat(colors[mapType][1]);
+
+ for(let i=0;i<65;i++){
+  let x=Math.random()*190-95;
+  let z=Math.random()*190-95;
+  if(Math.hypot(x,z)<12)continue;
+
+  const trunk=new THREE.Mesh(
+   new THREE.CylinderGeometry(.25,.35,2,7),trunkMat
+  );
+  trunk.position.set(x,1,z);
+  trunk.castShadow=true;
+  scene.add(trunk);
+
+  const leaves=new THREE.Mesh(
+   new THREE.ConeGeometry(1.8,4,7),treeMat
+  );
+  leaves.position.set(x,3.6,z);
+  leaves.castShadow=true;
+  scene.add(leaves);
+ }
+
+ for(let i=0;i<15;i++){
+  let x=Math.random()*150-75;
+  let z=Math.random()*150-75;
+  const building=new THREE.Mesh(
+   new THREE.BoxGeometry(7,4,7),
+   mat(0x9c927e)
+  );
+  building.position.set(x,2,z);
+  building.castShadow=true;
+  building.receiveShadow=true;
+  scene.add(building);
  }
 }
 
-function startGame(){
- mapType=document.getElementById("mapSelect").value;
- createMap();
- player={x:0,y:0,hp:100,angle:0};
+function reset(){
+ // Xóa thế giới cũ
+ while(scene.children.length>0){
+  let o=scene.children[scene.children.length-1];
+  if(o===sun)break;
+  scene.remove(o);
+ }
+ scene.add(new THREE.HemisphereLight(0xffffff,0x52664a,2));
+ scene.add(sun);
  bots=[];bullets=[];
- kills=0;ammo=30;zone=1050;frame=0;
- reloading=false;
- // 1 người chơi + 49 bot = 50 nhân vật
+ hp=100;kills=0;ammo=30;zone=95;
+ mapType=document.getElementById("map").value;
+ ground();addWorld();
+
+ player=makeCharacter(0x268cff);
+ player.position.set(0,0,0);
+ scene.add(player);
+
+ // 49 bot + 1 người chơi
  for(let i=0;i<49;i++){
-  let angle=random(0,Math.PI*2);
-  let d=random(300,950);
-  bots.push({
-   x:Math.cos(angle)*d,
-   y:Math.sin(angle)*d,
-   hp:100,
-   speed:random(0.7,1.35),
-   cooldown:random(20,100),
-   wander:random(0,Math.PI*2),
-   color:["#e74c3c","#d84f8a","#bd6b37"][i%3]
-  });
+  let b=makeCharacter(
+   [0xc54c3e,0x8c52c7,0x4c927b][i%3]
+  );
+  let a=Math.random()*Math.PI*2;
+  let d=20+Math.random()*65;
+  b.position.set(Math.cos(a)*d,0,Math.sin(a)*d);
+  b.userData.hp=100;
+  b.userData.speed=.025+Math.random()*.025;
+  b.userData.cool=Math.random()*100;
+  b.userData.ai=Math.random()*6;
+  scene.add(b);bots.push(b);
  }
- document.getElementById("start").classList.add("hidden");
- document.getElementById("hud").classList.remove("hidden");
- document.getElementById("controls").classList.remove("hidden");
- document.getElementById("bottomInfo").classList.remove("hidden");
- document.getElementById("notice").textContent="BẮT ĐẦU! HÃY SINH TỒN!";
- running=true;
  updateHUD();
- requestAnimationFrame(loop);
 }
 
 function updateHUD(){
- document.getElementById("hp").textContent=Math.max(0,Math.ceil(player.hp));
- document.getElementById("ammo").textContent=ammo;
- document.getElementById("kills").textContent=kills;
- document.getElementById("alive").textContent=bots.length+1;
- document.getElementById("zone").textContent="BO: "+Math.round(zone);
+ document.getElementById("health").textContent="❤️ "+Math.max(0,Math.ceil(hp))+" | 🔫 "+ammo;
+ document.getElementById("count").textContent="👥 "+(bots.length+1)+" | ☠️ "+kills;
 }
 
-function drawCharacter(x,y,color,angle,isPlayer=false){
- ctx.save();
- ctx.translate(x,y);
- // bóng
- ctx.fillStyle="#0005";
- ctx.beginPath();ctx.ellipse(0,13,17,7,0,0,Math.PI*2);ctx.fill();
- // chân
- ctx.fillStyle="#26313a";
- ctx.fillRect(-10,5,8,12);
- ctx.fillRect(3,5,8,12);
- // thân
- ctx.fillStyle=color;
- ctx.fillRect(-12,-12,24,23);
- // đầu
- ctx.fillStyle="#e9c29b";
- ctx.beginPath();ctx.arc(0,-18,9,0,Math.PI*2);ctx.fill();
- // súng
- ctx.rotate(angle);
- ctx.fillStyle="#171717";
- ctx.fillRect(7,-4,28,6);
- ctx.fillStyle="#777";
- ctx.fillRect(29,-3,8,4);
- ctx.restore();
-}
-
-function drawWorld(){
- let camX=player.x-W/2;
- let camY=player.y-H/2;
- ctx.fillStyle=mapColor;
- ctx.fillRect(0,0,W,H);
-
- // Cỏ, cát, tuyết
- ctx.strokeStyle=mapType==="snow"?"#ffffff25":"#ffffff12";
- ctx.lineWidth=1;
- for(let x=(-camX%70);x<W;x+=70){
-  ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();
+function start(){
+ if(innerWidth<innerHeight){
+  alert("Hãy xoay iPhone nằm ngang rồi bắt đầu!");
+  return;
  }
- for(let y=(-camY%70);y<H;y+=70){
-  ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();
- }
-
- // Công trình
- obstacles.forEach(o=>{
-  let x=o.x-camX,y=o.y-camY;
-  if(x<-130||x>W+130||y<-130||y>H+130)return;
-  ctx.fillStyle="#252c31";
-  ctx.fillRect(x,y,o.w,o.h);
-  ctx.fillStyle=mapType==="snow"?"#d6e2e8":"#9a8a6b";
-  ctx.fillRect(x+5,y+5,o.w-10,o.h-10);
-  ctx.fillStyle="#333";
-  ctx.fillRect(x+o.w*.4,y+o.h*.4,o.w*.2,o.h*.2);
- });
-
- // Vòng bo
- ctx.strokeStyle="#4fc9ff";
- ctx.lineWidth=5;
- ctx.beginPath();
- ctx.arc(-camX,-camY,zone,0,Math.PI*2);
- ctx.stroke();
-
- // Vùng ngoài bo
- ctx.fillStyle="#2355aa18";
- ctx.beginPath();
- ctx.rect(0,0,W,H);
- ctx.arc(-camX,-camY,zone,0,Math.PI*2,true);
- ctx.fill("evenodd");
-
- // Đạn
- bullets.forEach(b=>{
-  ctx.fillStyle=b.owner==="player"?"#ffe75a":"#ff7955";
-  ctx.beginPath();
-  ctx.arc(b.x-camX,b.y-camY,4,0,Math.PI*2);
-  ctx.fill();
- });
-
- // Bot
- bots.forEach(b=>{
-  drawCharacter(b.x-camX,b.y-camY,b.color,
-   Math.atan2(player.y-b.y,player.x-b.x));
-  ctx.fillStyle="#e33";
-  ctx.fillRect(b.x-camX-15,b.y-camY-35,30,4);
-  ctx.fillStyle="#5f5";
-  ctx.fillRect(b.x-camX-15,b.y-camY-35,30*b.hp/100,4);
- });
-
- // Người chơi
- drawCharacter(W/2,H/2,"#258cff",player.angle,true);
-
- // tâm ngắm
- ctx.strokeStyle="white";
- ctx.lineWidth=2;
- ctx.beginPath();
- ctx.arc(W/2,H/2,12,0,Math.PI*2);
- ctx.moveTo(W/2-20,H/2);ctx.lineTo(W/2-7,H/2);
- ctx.moveTo(W/2+7,H/2);ctx.lineTo(W/2+20,H/2);
- ctx.moveTo(W/2,H/2-20);ctx.lineTo(W/2,H/2-7);
- ctx.moveTo(W/2,H/2+7);ctx.lineTo(W/2,H/2+20);
- ctx.stroke();
+ try{
+  if(document.documentElement.requestFullscreen)
+   document.documentElement.requestFullscreen();
+  if(screen.orientation?.lock)
+   screen.orientation.lock("landscape").catch(()=>{});
+ }catch(e){}
+ reset();
+ document.getElementById("lobby").style.display="none";
+ document.getElementById("hud").style.display="block";
+ playing=true;
+ document.getElementById("notice").textContent="BẮT ĐẦU SINH TỒN!";
 }
 
 function shoot(){
- if(!running||ammo<=0||reloading)return;
- let now=Date.now();
- if(now-lastShot<230)return;
- lastShot=now;
- ammo--;
- let target=null,best=Infinity;
- bots.forEach(b=>{
-  let d=distance(player,b);
-  if(d<best){best=d;target=b;}
- });
- if(!target){updateHUD();return;}
- let dx=target.x-player.x,dy=target.y-player.y;
- let d=Math.hypot(dx,dy)||1;
- player.angle=Math.atan2(dy,dx);
- bullets.push({
-  x:player.x+Math.cos(player.angle)*25,
-  y:player.y+Math.sin(player.angle)*25,
-  dx:dx/d,dy:dy/d,owner:"player",life:60,damage:35
- });
+ if(!playing||ammo<=0||Date.now()-lastShot<260)return;
+ lastShot=Date.now();ammo--;
+ const origin=new THREE.Vector3();
+ camera.getWorldPosition(origin);
+ const direction=new THREE.Vector3();
+ camera.getWorldDirection(direction);
+ raycaster.set(origin,direction);
+ const hits=raycaster.intersectObjects(
+  bots.flatMap(b=>b.children),true
+ );
+ if(hits.length){
+  let obj=hits[0].object;
+  let target=bots.find(b=>b===obj||b.children.includes(obj)||b.getObjectById(obj.id));
+  if(target){
+   target.userData.hp-=35;
+   if(target.userData.hp<=0){
+    scene.remove(target);
+    bots=bots.filter(b=>b!==target);
+    kills++;
+   }
+  }
+ }
  updateHUD();
 }
 
 function reload(){
- if(reloading||ammo===30)return;
- reloading=true;
+ if(ammo===30)return;
  document.getElementById("reload").textContent="...";
  setTimeout(()=>{
-  ammo=30;reloading=false;
+  ammo=30;
   document.getElementById("reload").textContent="↻";
   updateHUD();
- },1300);
+ },1200);
 }
 
-function update(){
- frame++;
- // di chuyển
- player.x+=move.x*3.7;
- player.y+=move.y*3.7;
- player.x=Math.max(-1100,Math.min(1100,player.x));
- player.y=Math.max(-1100,Math.min(1100,player.y));
+function update(dt){
+ if(!playing)return;
 
- // vòng bo thu nhỏ
- if(frame%50===0)zone=Math.max(180,zone-7);
- if(Math.hypot(player.x,player.y)>zone)player.hp-=0.16;
+ // Điều khiển nhân vật
+ let forward=new THREE.Vector3(
+  -Math.sin(yaw),0,-Math.cos(yaw)
+ );
+ let right=new THREE.Vector3(
+  Math.cos(yaw),0,-Math.sin(yaw)
+ );
+ player.position.addScaledVector(forward,-moveY*7*dt);
+ player.position.addScaledVector(right,moveX*7*dt);
+ player.rotation.y=yaw;
 
- // bot AI
+ // Camera sau lưng
+ let back=new THREE.Vector3(
+  Math.sin(yaw)*9,4+pitch*5,Math.cos(yaw)*9
+ );
+ camera.position.lerp(
+  player.position.clone().add(back),.13
+ );
+ camera.lookAt(
+  player.position.x,player.position.y+1.7,player.position.z
+ );
+
+ // AI bot
  bots.forEach(b=>{
-  let dx=player.x-b.x,dy=player.y-b.y;
-  let d=Math.hypot(dx,dy)||1;
-  b.cooldown--;
-
-  if(d<550){
-   let speed=b.speed;
-   if(d>190){b.x+=dx/d*speed;b.y+=dy/d*speed;}
-   else if(d<105){b.x-=dx/d*speed*.6;b.y-=dy/d*speed*.6;}
-   if(d<450&&b.cooldown<=0){
-    let a=Math.atan2(dy,dx)+random(-.16,.16);
-    bullets.push({
-     x:b.x,y:b.y,
-     dx:Math.cos(a),dy:Math.sin(a),
-     owner:"bot",life:45,damage:random(5,10)
-    });
-    b.cooldown=random(65,110);
-   }
-  }else{
-   b.x+=Math.cos(b.wander)*b.speed*.5;
-   b.y+=Math.sin(b.wander)*b.speed*.5;
-   if(frame%100===0)b.wander=random(0,Math.PI*2);
+  let dx=player.position.x-b.position.x;
+  let dz=player.position.z-b.position.z;
+  let d=Math.hypot(dx,dz);
+  b.userData.cool-=dt;
+  if(d>5&&d<65){
+   b.position.x+=dx/d*b.userData.speed*60*dt;
+   b.position.z+=dz/d*b.userData.speed*60*dt;
+   b.rotation.y=Math.atan2(-dx,-dz);
   }
-  if(Math.hypot(b.x,b.y)>zone)b.hp-=.08;
- });
-
- // đạn bay và va chạm
- bullets.forEach(b=>{
-  b.x+=b.dx*11;
-  b.y+=b.dy*11;
-  b.life--;
-  if(b.owner==="player"){
-   bots.forEach(e=>{
-    if(e.hp>0&&Math.hypot(e.x-b.x,e.y-b.y)<20){
-     e.hp-=b.damage;b.life=0;
-    }
-   });
-  }else if(Math.hypot(player.x-b.x,player.y-b.y)<20){
-   player.hp-=b.damage;b.life=0;
+  if(d<13&&b.userData.cool<=0){
+   hp-=2;
+   b.userData.cool=1.2;
+  }
+  if(b.position.distanceTo(player.position)>110){
+   b.userData.ai+=dt;
+   b.position.x+=Math.sin(b.userData.ai)*.3*dt;
   }
  });
- bullets=bullets.filter(b=>b.life>0);
 
- let before=bots.length;
- bots=bots.filter(b=>b.hp>0);
- // Đếm bot bị người chơi hạ
- kills+=before-bots.length;
+ // Vòng bo
+ zone=Math.max(20,zone-.002*dt);
+ if(Math.hypot(player.position.x,player.position.z)>zone)
+  hp-=dt*3;
+
  updateHUD();
 
- if(player.hp<=0){endGame(false);return;}
- if(bots.length===0){endGame(true);return;}
+ if(hp<=0)end(false);
+ if(bots.length===0)end(true);
+}
+
+function end(win){
+ playing=false;
+ document.getElementById("hud").style.display="none";
+ document.getElementById("lobby").style.display="flex";
+ document.querySelector(".middle h1").textContent=
+  win?"BOOYAH!":"BẠN ĐÃ BỊ LOẠI";
+ document.querySelector(".middle p").textContent=
+  "Bạn đã hạ "+kills+" đối thủ";
+ document.getElementById("start").textContent="CHƠI LẠI";
 }
 
 function loop(){
- if(!running)return;
- update();
- drawWorld();
- if(running)requestAnimationFrame(loop);
+ requestAnimationFrame(loop);
+ let dt=Math.min(clock.getDelta(),.04);
+ update(dt);
+ renderer.render(scene,camera);
 }
+loop();
 
-function endGame(win){
- running=false;
- document.getElementById("start").classList.remove("hidden");
- document.getElementById("hud").classList.add("hidden");
- document.getElementById("controls").classList.add("hidden");
- document.getElementById("bottomInfo").classList.add("hidden");
- document.getElementById("start").querySelector("h2").textContent=
-  win?"🏆 BOOYAH!":"💀 BẠN ĐÃ BỊ LOẠI";
- document.getElementById("message").textContent=
-  "Hạ gục "+kills+" đối thủ!";
- document.getElementById("play").textContent="CHƠI LẠI";
- document.getElementById("notice").textContent="";
-}
-
-// Joystick cảm ứng
-const joy=document.getElementById("joy");
-const stick=document.getElementById("stick");
-let joyActive=false;
-
-function moveJoy(e){
- let r=joy.getBoundingClientRect();
- let x=e.clientX-(r.left+r.width/2);
- let y=e.clientY-(r.top+r.height/2);
- let d=Math.hypot(x,y),max=40;
- if(d>max){x=x/d*max;y=y/d*max;}
- move.x=x/max;move.y=y/max;
- if(Math.hypot(move.x,move.y)>.1)
-  player.angle=Math.atan2(move.y,move.x);
- stick.style.left=(36+x)+"px";
- stick.style.top=(36+y)+"px";
-}
-joy.addEventListener("pointerdown",e=>{
- joyActive=true;
- joy.setPointerCapture(e.pointerId);
- moveJoy(e);
-});
-joy.addEventListener("pointermove",e=>{
- if(joyActive)moveJoy(e);
-});
-function stopJoy(){
- joyActive=false;move={x:0,y:0};
- stick.style.left="36px";stick.style.top="36px";
-}
-joy.addEventListener("pointerup",stopJoy);
-joy.addEventListener("pointercancel",stopJoy);
-
+document.getElementById("start").onclick=start;
 document.getElementById("fire").addEventListener("pointerdown",e=>{
  e.preventDefault();shoot();
 });
 document.getElementById("reload").onclick=reload;
-document.getElementById("play").onclick=startGame;
 
-// Không cho iPhone cuộn trang khi chơi
-document.addEventListener("contextmenu",e=>e.preventDefault());
+// Joystick
+const joy=document.getElementById("joystick");
+const knob=document.getElementById("knob");
+let joyOn=false;
+joy.addEventListener("pointerdown",e=>{
+ joyOn=true;joy.setPointerCapture(e.pointerId);
+ joystickMove(e);
+});
+joy.addEventListener("pointermove",e=>{
+ if(joyOn)joystickMove(e);
+});
+function joystickMove(e){
+ let r=joy.getBoundingClientRect();
+ let x=e.clientX-r.left-r.width/2;
+ let y=e.clientY-r.top-r.height/2;
+ let d=Math.hypot(x,y),m=35;
+ if(d>m){x=x/d*m;y=y/d*m}
+ moveX=x/m;moveY=y/m;
+ knob.style.left=34+x+"px";
+ knob.style.top=34+y+"px";
+}
+function stopJoy(){
+ joyOn=false;moveX=0;moveY=0;
+ knob.style.left="34px";knob.style.top="34px";
+}
+joy.addEventListener("pointerup",stopJoy);
+joy.addEventListener("pointercancel",stopJoy);
+
+// Vuốt bên phải để xoay camera
+let lookOn=false,lastX=0,lastY=0;
+renderer.domElement.addEventListener("pointerdown",e=>{
+ if(e.clientX>innerWidth*.4){
+  lookOn=true;lastX=e.clientX;lastY=e.clientY;
+  renderer.domElement.setPointerCapture(e.pointerId);
+ }
+});
+renderer.domElement.addEventListener("pointermove",e=>{
+ if(!lookOn||!playing)return;
+ yaw-=(e.clientX-lastX)*.006;
+ pitch=Math.max(-.2,Math.min(.8,pitch+(e.clientY-lastY)*.004));
+ lastX=e.clientX;lastY=e.clientY;
+});
+renderer.domElement.addEventListener("pointerup",()=>lookOn=false);
+renderer.domElement.addEventListener("pointercancel",()=>lookOn=false);
+
+addEventListener("resize",()=>{
+ camera.aspect=innerWidth/innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(innerWidth,innerHeight);
+});
 </script>
 </body>
 </html>
